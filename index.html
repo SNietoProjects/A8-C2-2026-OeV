@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Tema 8 — Igualdad, LGTBI y Violencia de Género | Opositar en Valencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --naranja: #d97706; --naranja-claro: #fef3c7; --naranja-borde: #f59e0b;
+    --azul-oscuro: #1e293b; --texto: #374151; --texto-suave: #6b7280;
+    --borde: #e5e7eb; --fondo: #fafaf9; --blanco: #ffffff;
+    --verde: #166534; --verde-bg: #f0fdf4; --verde-borde: #86efac;
+    --rojo: #991b1b; --rojo-bg: #fef2f2; --rojo-borde: #fca5a5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; font-size: 16px; line-height: 1.6; }
+  header { background: var(--blanco); border-bottom: 1px solid var(--borde); }
+  .header-top { max-width: 860px; margin: 0 auto; padding: 1.4rem 1.5rem 1rem; display: flex; align-items: flex-start; gap: 1.2rem; }
+  .header-logo { width: 48px; height: 48px; border-radius: 8px; object-fit: contain; flex-shrink: 0; }
+  .header-textos { flex: 1; }
+  .header-site { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--naranja); font-weight: 600; margin-bottom: 3px; }
+  .header-titulo { font-family: 'Lora', serif; font-size: clamp(1.15rem, 3vw, 1.65rem); font-weight: 700; color: var(--azul-oscuro); line-height: 1.2; }
+  .header-sub { font-size: 0.88rem; color: var(--texto-suave); margin-top: 4px; }
+  .header-meta { background: var(--naranja-claro); border-top: 1px solid #fde68a; padding: 0.55rem 1.5rem; }
+  .header-meta-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.83rem; color: #92400e; font-weight: 500; }
+  .barra-wrap { position: sticky; top: 0; z-index: 100; background: var(--blanco); border-bottom: 1px solid var(--borde); padding: 0.6rem 1.5rem; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .barra-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; }
+  .barra-track { flex: 1; height: 6px; background: #f3f4f6; border-radius: 99px; overflow: hidden; }
+  .barra-fill { height: 100%; background: var(--naranja); border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+  .barra-num { font-size: 13px; font-weight: 600; color: var(--azul-oscuro); white-space: nowrap; min-width: 52px; }
+  .barra-score { font-size: 13px; color: var(--texto-suave); white-space: nowrap; }
+  .barra-score .ok { color: var(--verde); font-weight: 600; }
+  .barra-score .ko { color: var(--rojo); font-weight: 600; }
+  main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  .card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 1.5rem 1.6rem; margin-bottom: 1.4rem; transition: box-shadow 0.2s; }
+  .card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.06); }
+  .card-num { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--naranja); margin-bottom: 0.5rem; }
+  .card-pregunta { font-family: 'Lora', serif; font-size: 1rem; font-weight: 600; line-height: 1.55; color: var(--azul-oscuro); margin-bottom: 1.1rem; }
+  .opciones { display: flex; flex-direction: column; gap: 0.45rem; }
+  .opcion { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.7rem 1rem; border: 1.5px solid var(--borde); border-radius: 7px; cursor: pointer; background: var(--blanco); text-align: left; font-family: 'Source Sans 3', sans-serif; font-size: 0.93rem; color: var(--texto); line-height: 1.5; transition: border-color 0.15s, background 0.15s; width: 100%; }
+  .opcion:hover:not(:disabled) { border-color: var(--naranja-borde); background: var(--naranja-claro); }
+  .opcion .letra { font-weight: 700; color: var(--naranja); min-width: 18px; font-size: 0.85rem; margin-top: 2px; flex-shrink: 0; }
+  .opcion.correcta { border-color: var(--verde-borde); background: var(--verde-bg); color: var(--verde); }
+  .opcion.correcta .letra { color: #15803d; }
+  .opcion.incorrecta { border-color: var(--rojo-borde); background: var(--rojo-bg); color: var(--rojo); }
+  .opcion.incorrecta .letra { color: var(--rojo); }
+  .opcion:disabled { cursor: default; }
+  .explicacion { display: none; margin-top: 1rem; padding: 0.9rem 1rem 0.9rem 1.1rem; background: #fffbeb; border-left: 3px solid var(--naranja); border-radius: 0 6px 6px 0; font-size: 0.875rem; line-height: 1.65; color: var(--texto); }
+  .explicacion.visible { display: block; animation: fadeIn 0.22s ease; }
+  .explicacion strong { color: var(--azul-oscuro); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .resultado { display: none; background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; padding: 2.5rem 2rem 2rem; margin: 1.5rem 0 2rem; text-align: center; }
+  .resultado.visible { display: block; animation: fadeIn 0.3s ease; }
+  .resultado-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--naranja); font-weight: 600; margin-bottom: 0.5rem; }
+  .resultado h2 { font-family: 'Lora', serif; font-size: 1.75rem; font-weight: 700; color: var(--azul-oscuro); margin-bottom: 0.3rem; }
+  .resultado-nota { font-size: 3.2rem; font-weight: 700; color: var(--azul-oscuro); line-height: 1; margin: 1rem 0 0.3rem; font-family: 'Lora', serif; }
+  .resultado-nota span { color: var(--naranja); }
+  .calif-badge { display: inline-block; padding: 5px 16px; border-radius: 99px; font-size: 0.9rem; font-weight: 600; margin: 0.6rem 0 1.5rem; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 0 0 1.5rem; }
+  .stat { background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 0.9rem 0.5rem; }
+  .stat-num { font-size: 1.9rem; font-weight: 700; font-family: 'Lora', serif; }
+  .stat-lab { font-size: 0.78rem; color: var(--texto-suave); margin-top: 2px; }
+  .resultado-hint { font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 1.2rem; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.7rem 1.6rem; border-radius: 7px; font-family: 'Source Sans 3', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; }
+  .btn-naranja { background: var(--naranja); color: white; }
+  .btn-naranja:hover { background: #b45309; transform: translateY(-1px); }
+  @media (max-width: 580px) { main { padding: 1.2rem 1rem 4rem; } .card { padding: 1.1rem; } .stats { grid-template-columns: 1fr 1fr; } .header-top { padding: 1rem; gap: 0.8rem; } .header-meta { padding: 0.5rem 1rem; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <img class="header-logo"
+      src="https://opositorgva.wordpress.com/wp-content/uploads/2024/04/cropped-opositar-en-valencia-logo-sin-fondo.png"
+      alt="Opositar en Valencia" onerror="this.style.display='none'">
+    <div class="header-textos">
+      <div class="header-site">Opositar en Valencia · GVA</div>
+      <div class="header-titulo">Tema 8 — Igualdad, personas LGTBI y Violencia de Género</div>
+      <div class="header-sub">LO 3/2007 · Ley 9/2003 GVA · Ley 4/2023 LGTBI · LO 1/2004 Violencia de Género</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="header-meta-inner">
+      <span id="totalLabel">📋 Cargando...</span>
+      <span>🎯 Nivel medio-alto</span>
+      <span>🔀 Orden aleatorio en cada intento</span>
+      <span>✅ Explicación en cada respuesta</span>
+    </div>
+  </div>
+</header>
+
+<div class="barra-wrap">
+  <div class="barra-inner">
+    <div class="barra-track"><div class="barra-fill" id="barraFill"></div></div>
+    <span class="barra-num" id="barraNum">0 / ?</span>
+    <span class="barra-score"><span class="ok" id="scoreOk">✓ 0</span> &nbsp;<span class="ko" id="scoreKo">✗ 0</span></span>
+  </div>
+</div>
+
+<main id="mainContent"></main>
+
+<script>
+const BANCO = [
+
+  /* ══ LO 3/2007 — TÍTULO PRELIMINAR ══ */
+  {
+    p: "¿Cuál es el objeto de la Ley Orgánica 3/2007 según su artículo 1.1?",
+    ops: [
+      "Eliminar exclusivamente la discriminación de la mujer en el ámbito laboral y retributivo",
+      "Hacer efectivo el derecho de igualdad de trato y de oportunidades entre mujeres y hombres, en particular mediante la eliminación de la discriminación de la mujer en cualesquiera de los ámbitos de la vida",
+      "Regular las medidas de acción positiva en el acceso al empleo público de las mujeres",
+      "Garantizar la paridad en todos los órganos de representación política del Estado"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1.1 LO 3/2007 establece que su objeto es «hacer efectivo el derecho de igualdad de trato y de oportunidades entre mujeres y hombres, en particular mediante la eliminación de la discriminación de la mujer, sea cual fuere su circunstancia o condición, en cualesquiera de los ámbitos de la vida», desarrollando los artículos 9.2 y 14 de la Constitución."
+  },
+  {
+    p: "El artículo 1.1 de la LO 3/2007 cita expresamente dos artículos constitucionales como base de la ley. ¿Cuáles son?",
+    ops: [
+      "Artículos 14 y 23 de la Constitución",
+      "Artículos 9.2 y 14 de la Constitución",
+      "Artículos 9.2 y 35 de la Constitución",
+      "Artículos 14 y 15 de la Constitución"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1.1 LO 3/2007 fundamenta la ley «en el desarrollo de los artículos 9.2 y 14 de la Constitución». El art. 9.2 CE impone a los poderes públicos promover la igualdad real y efectiva; el art. 14 CE consagra el principio de igualdad y la prohibición de discriminación por razón de sexo, entre otras causas."
+  },
+  {
+    p: "¿A quién se aplican las obligaciones de la LO 3/2007 según su artículo 2.2?",
+    ops: [
+      "Solo a las personas físicas y jurídicas de nacionalidad española",
+      "A toda persona, física o jurídica, que se encuentre o actúe en territorio español, cualquiera que fuese su nacionalidad, domicilio o residencia",
+      "Exclusivamente a las Administraciones Públicas y entidades del sector público",
+      "A los ciudadanos españoles y a los extranjeros residentes legalmente en España"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.2 LO 3/2007 establece que «las obligaciones establecidas en esta Ley serán de aplicación a toda persona, física o jurídica, que se encuentre o actúe en territorio español, cualquiera que fuese su nacionalidad, domicilio o residencia». El criterio es territorial, no de nacionalidad."
+  },
+
+  /* ══ LO 3/2007 — TÍTULO I ══ */
+  {
+    p: "El artículo 3 de la LO 3/2007 define el principio de igualdad de trato. ¿Qué situaciones menciona expresamente como origen de posible discriminación?",
+    ops: [
+      "La edad, la orientación sexual y el origen étnico",
+      "La maternidad, la asunción de obligaciones familiares y el estado civil",
+      "El embarazo, la lactancia y la excedencia por cuidado de hijos",
+      "El estado civil, la religión y las convicciones políticas"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 3 LO 3/2007 dispone que el principio de igualdad de trato supone la ausencia de toda discriminación directa o indirecta por razón de sexo, «y, especialmente, las derivadas de la maternidad, la asunción de obligaciones familiares y el estado civil». Estos tres supuestos gozan de mención expresa en la ley."
+  },
+  {
+    p: "Según el artículo 4 de la LO 3/2007, ¿cuál es el carácter que tiene el principio de igualdad en el ordenamiento jurídico?",
+    ops: [
+      "Es un principio programático de aplicación exclusivamente en el ámbito público",
+      "Es un principio informador del ordenamiento jurídico que se integrará y observará en la interpretación y aplicación de las normas jurídicas",
+      "Es una norma de rango constitucional que prevalece sobre cualquier otra norma",
+      "Es un principio rector de la política social y económica sin valor normativo directo"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 4 LO 3/2007 establece que «la igualdad de trato y de oportunidades entre mujeres y hombres es un principio informador del ordenamiento jurídico y, como tal, se integrará y observará en la interpretación y aplicación de las normas jurídicas». Tiene efecto transversal sobre todo el ordenamiento."
+  },
+  {
+    p: "¿Cómo define el artículo 6.1 de la LO 3/2007 la discriminación directa por razón de sexo?",
+    ops: [
+      "La situación en que una disposición, criterio o práctica aparentemente neutros pone a personas de un sexo en desventaja",
+      "Cualquier trato desfavorable a las mujeres relacionado con el embarazo o la maternidad",
+      "La situación en que una persona sea, haya sido o pudiera ser tratada, en atención a su sexo, de manera menos favorable que otra en situación comparable",
+      "Todo comportamiento de naturaleza sexual que atente contra la dignidad de una persona"
+    ],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 6.1 LO 3/2007 define la discriminación directa como «la situación en que se encuentra una persona que sea, haya sido o pudiera ser tratada, en atención a su sexo, de manera menos favorable que otra en situación comparable». La fórmula incluye el potencial («pudiera ser»), ampliando la protección."
+  },
+  {
+    p: "El artículo 6.2 de la LO 3/2007 define la discriminación indirecta. ¿Cuándo se puede justificar una disposición, criterio o práctica aparentemente neutra que perjudica a un sexo?",
+    ops: [
+      "Cuando la decisión empresarial sea adoptada de buena fe y sin intención discriminatoria",
+      "Cuando pueda justificarse objetivamente en atención a una finalidad legítima y los medios para alcanzarla sean necesarios y adecuados",
+      "Cuando así lo haya establecido un convenio colectivo negociado con representación sindical paritaria",
+      "Cuando la diferencia de trato beneficie al sexo menos representado en la empresa o institución"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 6.2 LO 3/2007 establece que la discriminación indirecta se produce salvo que la disposición, criterio o práctica «puedan justificarse objetivamente en atención a una finalidad legítima y que los medios para alcanzar dicha finalidad sean necesarios y adecuados». Son tres los requisitos acumulativos: finalidad legítima, medios necesarios y medios adecuados."
+  },
+  {
+    p: "¿Qué establece el artículo 6.3 de la LO 3/2007 respecto a las órdenes de discriminar?",
+    ops: [
+      "Solo se consideran discriminatorias si tienen efecto real y demostrable sobre una persona concreta",
+      "Son discriminatorias únicamente cuando las dicta quien tiene autoridad sobre el discriminado",
+      "En cualquier caso, se considera discriminatoria toda orden de discriminar, directa o indirectamente, por razón de sexo",
+      "Se consideran discriminatorias solo si van acompañadas de una sanción por incumplimiento"
+    ],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 6.3 LO 3/2007 es categórico: «en cualquier caso, se considera discriminatoria toda orden de discriminar, directa o indirectamente, por razón de sexo». La orden en sí misma es discriminatoria, con independencia de si llega a ejecutarse o de quién la imparte."
+  },
+  {
+    p: "El artículo 7 de la LO 3/2007 distingue entre acoso sexual y acoso por razón de sexo. ¿Cuál es la diferencia fundamental entre ambos?",
+    ops: [
+      "El acoso sexual exige siempre contacto físico; el acoso por razón de sexo puede ser únicamente verbal",
+      "El acoso sexual es de naturaleza sexual; el acoso por razón de sexo se realiza en función del sexo de la persona, sin que el comportamiento tenga carácter sexual",
+      "El acoso sexual solo se produce entre personas con relación laboral; el acoso por razón de sexo puede ocurrir en cualquier ámbito",
+      "El acoso sexual requiere reiteración de conductas; el acoso por razón de sexo puede ser un acto único"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 7 LO 3/2007 distingue: el acoso sexual (art. 7.1) es «cualquier comportamiento, verbal o físico, de naturaleza sexual» que atente contra la dignidad; el acoso por razón de sexo (art. 7.2) es «cualquier comportamiento realizado en función del sexo de una persona» que atente contra su dignidad. La diferencia es que el primero tiene naturaleza sexual y el segundo no necesariamente."
+  },
+  {
+    p: "El artículo 7.4 de la LO 3/2007 contempla una situación específica de discriminación. ¿Cuál es?",
+    ops: [
+      "El despido de una trabajadora durante el periodo de lactancia natural",
+      "El condicionamiento de un derecho o expectativa de derecho a la aceptación de una situación constitutiva de acoso sexual o de acoso por razón de sexo",
+      "La no renovación de contrato temporal a una trabajadora embarazada",
+      "La negativa a conceder un ascenso a una trabajadora que ha ejercido una reducción de jornada"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 7.4 LO 3/2007 establece que «el condicionamiento de un derecho o de una expectativa de derecho a la aceptación de una situación constitutiva de acoso sexual o de acoso por razón de sexo se considerará también acto de discriminación por razón de sexo». Esto engloba el llamado «chantaje sexual» o acoso de intercambio (quid pro quo)."
+  },
+  {
+    p: "¿Qué dispone el artículo 8 de la LO 3/2007 sobre el embarazo y la maternidad?",
+    ops: [
+      "Constituye discriminación indirecta por razón de sexo todo trato desfavorable relacionado con el embarazo",
+      "Constituye discriminación directa por razón de sexo todo trato desfavorable a las mujeres relacionado con el embarazo o la maternidad",
+      "El embarazo y la maternidad son causas de justificación objetiva que permiten diferencias de trato",
+      "Solo es discriminación si el trato desfavorable proviene del empresario o empleador directo"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 8 LO 3/2007 establece que «constituye discriminación directa por razón de sexo todo trato desfavorable a las mujeres relacionado con el embarazo o la maternidad». Es discriminación directa (no indirecta) porque el sexo es el motivo inmediato del trato desfavorable."
+  },
+  {
+    p: "El artículo 9 de la LO 3/2007 regula la indemnidad frente a represalias. ¿Qué conductas generan la protección?",
+    ops: [
+      "Solo la presentación de denuncia ante la Inspección de Trabajo",
+      "La presentación de queja, reclamación, denuncia, demanda o recurso, de cualquier tipo, destinados a impedir la discriminación y exigir el cumplimiento del principio de igualdad",
+      "Exclusivamente la interposición de demanda judicial por discriminación",
+      "La participación como testigo en procedimientos por discriminación de sexo"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 9 LO 3/2007 protege frente a cualquier trato adverso que se produzca «como consecuencia de la presentación por su parte de queja, reclamación, denuncia, demanda o recurso, de cualquier tipo, destinados a impedir su discriminación y a exigir el cumplimiento efectivo del principio de igualdad». La enumeración es amplia y no taxativa."
+  },
+  {
+    p: "El artículo 10 de la LO 3/2007 establece las consecuencias de las conductas discriminatorias. ¿Cuáles son?",
+    ops: [
+      "Nulidad del acto y sanción administrativa únicamente",
+      "Nulidad e ineficacia del acto o cláusula, más responsabilidad mediante reparaciones o indemnizaciones reales, efectivas y proporcionadas, y en su caso sanciones eficaces y disuasorias",
+      "Solo responsabilidad penal cuando la conducta esté tipificada como delito",
+      "Nulidad relativa del acto, que puede subsanarse mediante acuerdo entre las partes"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 10 LO 3/2007 establece que los actos y cláusulas discriminatorias «se considerarán nulos y sin efecto, y darán lugar a responsabilidad a través de un sistema de reparaciones o indemnizaciones que sean reales, efectivas y proporcionadas al perjuicio sufrido, así como, en su caso, a través de un sistema eficaz y disuasorio de sanciones». Son tres consecuencias: nulidad, reparación/indemnización y sanciones."
+  },
+  {
+    p: "El artículo 11.1 de la LO 3/2007 regula las acciones positivas. ¿Qué condiciones deben cumplir?",
+    ops: [
+      "Deben ser permanentes e irreversibles para garantizar la igualdad estructural",
+      "Deben ser aplicables mientras subsistan situaciones patentes de desigualdad de hecho, y han de ser razonables y proporcionadas al objetivo",
+      "Solo pueden ser adoptadas por los Poderes Públicos, nunca por entidades privadas",
+      "Deben ser aprobadas por ley orgánica para tener validez jurídica"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 11.1 LO 3/2007 permite a los Poderes Públicos adoptar medidas específicas en favor de las mujeres para corregir situaciones de desigualdad de hecho. Dichas medidas «serán aplicables en tanto subsistan dichas situaciones» (temporalidad) y «habrán de ser razonables y proporcionadas en relación con el objetivo perseguido» (proporcionalidad)."
+  },
+  {
+    p: "Según el artículo 12.3 de la LO 3/2007, ¿quién tiene legitimación exclusiva en los litigios sobre acoso sexual y acoso por razón de sexo?",
+    ops: [
+      "El Ministerio Fiscal y las asociaciones de mujeres legalmente constituidas",
+      "La persona acosada será la única legitimada",
+      "Los sindicatos y las organizaciones de defensa de la igualdad",
+      "El Instituto de la Mujer o el organismo autonómico equivalente"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12.3 LO 3/2007 establece que «la persona acosada será la única legitimada en los litigios sobre acoso sexual y acoso por razón de sexo». Esta legitimación exclusiva protege la voluntad y autonomía de la víctima: nadie puede litigar por acoso en su nombre sin su consentimiento."
+  },
+  {
+    p: "El artículo 13.1 de la LO 3/2007 establece la inversión de la carga de la prueba en procedimientos por discriminación. ¿A quién corresponde probar qué?",
+    ops: [
+      "A la parte actora corresponde probar la discriminación; a la demandada probar el daño sufrido",
+      "A la persona demandada corresponde probar la ausencia de discriminación en las medidas adoptadas y su proporcionalidad",
+      "La carga de la prueba se distribuye por igual entre actora y demandada",
+      "Al órgano judicial corresponde recabar de oficio toda la prueba necesaria"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 13.1 LO 3/2007 establece que, cuando la parte actora fundamente sus alegaciones en actuaciones discriminatorias por razón de sexo, «corresponderá a la persona demandada probar la ausencia de discriminación en las medidas adoptadas y su proporcionalidad». Esta inversión de la carga de la prueba facilita la protección de las víctimas. No se aplica en procesos penales (art. 13.2)."
+  },
+
+  /* ══ LEY 9/2003 GVA ══ */
+  {
+    p: "¿Cuál es el objeto de la Ley 9/2003 de la Generalitat para la igualdad entre mujeres y hombres, según su artículo 1?",
+    ops: [
+      "Crear el Instituto Valenciano de la Mujer y regular sus competencias",
+      "Regular y hacer efectivo el principio de igualdad de mujeres y hombres en la Comunitat Valenciana, establecer principios, acciones básicas y organización administrativa",
+      "Desarrollar la LO 3/2007 en el ámbito territorial de la Comunitat Valenciana",
+      "Garantizar la paridad en los órganos de gobierno de la Generalitat Valenciana"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1 de la Ley 9/2003 GVA establece que su objeto es «regular y hacer efectivo el principio de igualdad de mujeres y hombres en la Comunidad Valenciana, establecer los principios generales que deben orientar dicha igualdad, determinar las acciones básicas que deben ser implementadas, así como establecer la organización administrativa de la igualdad de oportunidades»."
+  },
+  {
+    p: "El artículo 2.b) de la Ley 9/2003 GVA establece que no toda desigualdad constituye discriminación. ¿Qué tipo de desigualdad prohíbe?",
+    ops: [
+      "Toda desigualdad de resultado entre mujeres y hombres en cualquier ámbito",
+      "La desigualdad que carece de justificación objetiva, racional y razonable",
+      "La desigualdad que no haya sido previamente autorizada por la Generalitat",
+      "La desigualdad que no esté expresamente prevista en una norma con rango de ley"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.b) Ley 9/2003 establece que «no hay una prohibición general que impida establecer cualquier diferencia, lo que se prohíbe es la desigualdad que carece de justificación objetiva, racional y razonable». Admite diferencias de trato cuando estén objetiva y racionalmente justificadas."
+  },
+  {
+    p: "El artículo 4.2 de la Ley 9/2003 GVA establece la estrategia dual que deben adoptar las administraciones públicas valencianas. ¿En qué principios se basa?",
+    ops: [
+      "Principio de complementariedad de medidas de acción positiva y medidas que respondan a la transversalidad de género",
+      "Principio de paridad y principio de discriminación positiva",
+      "Principio de igualdad formal y principio de igualdad material",
+      "Principio de corresponsabilidad y principio de conciliación"
+    ],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 4.2 Ley 9/2003 establece que «las distintas administraciones públicas adoptarán una estrategia dual basada en el principio de complementariedad de medidas de acción positiva y las que respondan a la transversalidad de género». La acción positiva corrige desigualdades concretas; el mainstreaming de género integra la perspectiva de género en todas las políticas."
+  },
+  {
+    p: "¿Qué exige el artículo 4 bis de la Ley 9/2003 GVA respecto a los proyectos normativos?",
+    ops: [
+      "Que incluyan una memoria económica con perspectiva de género",
+      "Que incorporen un informe de impacto por razón de género desde el inicio del proceso de tramitación",
+      "Que sean aprobados por el Consell con informe previo del Consejo Valenciano de las Mujeres",
+      "Que contengan una cláusula de evaluación de resultados a los dos años de su entrada en vigor"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 4 bis Ley 9/2003 establece que «los proyectos normativos incorporarán un informe de impacto por razón de género que se elaborará por el departamento o centro directivo que propone el anteproyecto de ley o proyecto de norma, plan o programa» y «deberá acompañar la propuesta desde el inicio del proceso de tramitación»."
+  },
+  {
+    p: "El artículo 8.2 de la Ley 9/2003 GVA reconoce una figura específica en los centros educativos no universitarios. ¿Cuál es?",
+    ops: [
+      "El Coordinador de convivencia y disciplina escolar",
+      "La persona coordinadora de igualdad y convivencia",
+      "El Delegado de igualdad del claustro de profesores",
+      "El Tutor de igualdad y orientación académica"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 8.2 Ley 9/2003 reconoce «la figura de la persona coordinadora de igualdad y convivencia en los centros educativos no universitarios, que integre las medidas necesarias para la igualdad real y efectiva de género y para la prevención de la violencia machista». Sus funciones, horario y formación los determina la Administración educativa."
+  },
+  {
+    p: "El artículo 12 de la Ley 9/2003 GVA regula las subvenciones electorales. ¿En qué porcentaje se incrementan para los escaños obtenidos por mujeres?",
+    ops: [
+      "En un 5 por ciento",
+      "En un 10 por ciento",
+      "En un 15 por ciento",
+      "En un 20 por ciento"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12 Ley 9/2003 establece que «las subvenciones electorales de la Generalitat reconocidas por ley se incrementarán en un 10 por ciento para los escaños obtenidos por mujeres». El mismo porcentaje se aplica a la subvención por votos de candidaturas con presencia equilibrada, siempre que sea compatible con la Ley Electoral Valenciana."
+  },
+  {
+    p: "¿Qué es la Red Valenciana de Igualdad según el artículo 16 de la Ley 9/2003 GVA?",
+    ops: [
+      "Una red de centros de atención a víctimas de violencia de género dependientes de la Generalitat",
+      "Un servicio específico de promoción de la igualdad que asesora a mujeres y empresas, incorpora perspectiva de género en políticas municipales e informa en la elaboración de planes de igualdad",
+      "Una red de asociaciones de mujeres financiadas por la Generalitat para la sensibilización social",
+      "El conjunto de unidades administrativas de cada Consellería con competencias en igualdad"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 16 Ley 9/2003 define la Red Valenciana de Igualdad como el servicio de la Generalitat que se encarga de: incorporar la perspectiva de género en políticas públicas municipales, asesorar y sensibilizar a las mujeres, prevenir la violencia de género, informar a empresas en la elaboración e implementación de planes de igualdad e informar para la obtención del visado de igualdad."
+  },
+  {
+    p: "El artículo 20.1 de la Ley 9/2003 GVA define los planes de igualdad en las empresas. ¿Qué son?",
+    ops: [
+      "Documentos voluntarios que las empresas pueden elaborar para mejorar su imagen social",
+      "Un conjunto ordenado de medidas, adoptadas tras un diagnóstico de situación, tendentes a alcanzar la igualdad de trato y eliminar la discriminación por razón de sexo en la empresa",
+      "Planes anuales de formación en igualdad para toda la plantilla de la empresa",
+      "Acuerdos colectivos negociados con los sindicatos para garantizar la paridad salarial"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 20.1 Ley 9/2003 define los planes de igualdad como «un conjunto ordenado de medidas, adoptadas después de realizar un diagnóstico de situación, tendentes a alcanzar en la empresa la igualdad de trato y de oportunidades entre mujeres y hombres y a eliminar la discriminación por razón de sexo». Deben fijar objetivos concretos, estrategias y sistemas de seguimiento."
+  },
+  {
+    p: "El artículo 20.3 de la Ley 9/2003 GVA regula el «visado» de igualdad. ¿Qué ocurre si transcurren tres meses sin resolución expresa sobre su solicitud?",
+    ops: [
+      "La solicitud se entiende desestimada por silencio administrativo negativo",
+      "La solicitud se entiende estimada por silencio administrativo positivo",
+      "La empresa puede reclamar ante el órgano superior jerárquico",
+      "Se interrumpe el plazo y la Administración dispone de otros tres meses adicionales"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 20.3 Ley 9/2003 establece que «transcurrido el plazo de tres meses sin que se haya dictado resolución expresa, se entenderá estimada la solicitud» del visado de igualdad. Se aplica el silencio administrativo positivo, lo que favorece a las empresas que solicitan el visado."
+  },
+  {
+    p: "El artículo 26 de la Ley 9/2003 GVA regula la «feminización de la pobreza». ¿Qué medida concreta establece?",
+    ops: [
+      "Una renta básica de inserción para mujeres en situación de exclusión social",
+      "Un sistema de anticipos para el pago de alimentos reconocidos judicialmente a favor de hijos menores, en supuestos de separación, divorcio o nulidad",
+      "Un fondo de emergencia para mujeres víctimas de violencia de género sin recursos",
+      "Bonificaciones fiscales para empresas que contraten a mujeres en riesgo de pobreza"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 26 Ley 9/2003 establece que la Generalitat garantizará, «mediante un sistema de anticipos, el pago de alimentos reconocidos, a favor de las hijas e hijos menores de edad, en convenio judicialmente aprobado o resolución judicial, en los supuestos de separación legal, divorcio, declaración de nulidad del matrimonio y proceso de filiación o de alimentos»."
+  },
+  {
+    p: "Según el artículo 35 de la Ley 9/2003 GVA, ¿con qué periodicidad mínima debe el Gobierno valenciano remitir a Les Corts el informe sobre violencia contra las mujeres?",
+    ops: [
+      "Con carácter trimestral",
+      "Con carácter semestral",
+      "Al menos con carácter anual",
+      "Con carácter bienal"
+    ],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 35 Ley 9/2003 establece que el Gobierno remitirá a las Cortes Valencianas «al menos con carácter anual, un informe» que contenga preceptivamente los recursos destinados, número de denuncias, actuaciones de asistencia, procedimientos penales, readaptación de agresores y actividades de prevención y sensibilización."
+  },
+  {
+    p: "El artículo 46 de la Ley 9/2003 GVA establece una regla de desempate en la adjudicación de contratos administrativos. ¿A quién favorece?",
+    ops: [
+      "A las empresas con mayor porcentaje de mujeres en puestos directivos",
+      "A los licitadores que presenten un plan de igualdad previamente aprobado por cualquier administración pública u órgano competente",
+      "A las empresas con certificación de igualdad salarial entre mujeres y hombres",
+      "A las cooperativas de trabajo asociado con mayoría de socias mujeres"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 46.1 Ley 9/2003 establece que en caso de empate en la puntuación máxima «tendrán preferencia en la adjudicación las proposiciones de los licitadores que con la solvencia técnica de la empresa presenten un plan de igualdad previamente aprobado por cualquier administración pública u órgano competente»."
+  },
+  {
+    p: "¿Quién desempeña la Defensoría de la Igualdad de Género creada por el artículo 51 de la Ley 9/2003 GVA?",
+    ops: [
+      "Un cargo específico designado por Les Corts por mayoría de tres quintos",
+      "El Síndic de Greuges, en la forma y condiciones que prevé su ley de creación",
+      "El Consejo Valenciano de las Mujeres, a través de su presidencia",
+      "El órgano directivo de la Generalitat con competencias en materia de igualdad"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 51 Ley 9/2003 establece que la Defensoría de la Igualdad «será desempeñada por el Síndic de Greuges, en la forma y condiciones que prevé su ley de creación». Se atribuye esta función al Defensor del Pueblo autonómico valenciano, sin crear un órgano nuevo."
+  },
+
+  /* ══ LEY 4/2023 LGTBI ══ */
+  {
+    p: "¿Cuál es el deber que el artículo 4 de la Ley 4/2023 impone a los poderes públicos en relación con las personas LGTBI?",
+    ops: [
+      "Elaborar un plan nacional de igualdad LGTBI con carácter cuatrienal",
+      "Desarrollar todas las medidas necesarias para reconocer, garantizar, proteger y promover la igualdad de trato y no discriminación por razón de orientación e identidad sexual, expresión de género o características sexuales",
+      "Crear un registro estatal de personas LGTBI para garantizar su protección",
+      "Establecer cuotas de representación LGTBI en los órganos públicos colegiados"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 4 Ley 4/2023 establece que «los poderes públicos, en el ámbito de sus competencias, desarrollarán todas las medidas necesarias para reconocer, garantizar, proteger y promover la igualdad de trato y no discriminación por razón de orientación e identidad sexual, expresión de género o características sexuales de las personas LGTBI y sus familias»."
+  },
+  {
+    p: "El artículo 11 de la Ley 4/2023 regula el empleo público en relación con las personas LGTBI. ¿Qué exige a las Administraciones públicas?",
+    ops: [
+      "Reservar un porcentaje de plazas en la oferta de empleo público para personas LGTBI",
+      "Garantizar los derechos reconocidos en la ley para su personal e implantar medidas para la promoción y defensa de la igualdad de trato, previa negociación con los sindicatos",
+      "Crear unidades específicas de atención a empleados públicos LGTBI en cada ministerio",
+      "Publicar anualmente un informe sobre la situación de las personas LGTBI en el empleo público"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 11 Ley 4/2023 exige que las Administraciones «garantizarán los derechos reconocidos en esta ley para el conjunto del personal a su servicio, e implantarán medidas para la promoción y defensa de la igualdad de trato y no discriminación de las personas LGTBI en el acceso al empleo público y carrera profesional, previa negociación con las organizaciones sindicales»."
+  },
+  {
+    p: "El artículo 12.2 de la Ley 4/2023 establece una obligación concreta respecto a los procesos selectivos de acceso al empleo público. ¿Cuál es?",
+    ops: [
+      "Incluir en el tribunal de selección al menos un miembro especialista en diversidad LGTBI",
+      "Incluir en los programas de las pruebas selectivas formación y conocimientos sobre igualdad de trato y no discriminación de las personas LGTBI",
+      "Garantizar que las pruebas selectivas sean evaluadas de forma anónima para evitar discriminaciones",
+      "Establecer bonificaciones en la nota de corte para personas LGTBI que lo acrediten"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12.2 Ley 4/2023 establece que las Administraciones «incluirán en los programas de las pruebas selectivas de acceso al empleo público formación y conocimientos sobre igualdad de trato y no discriminación de las personas LGTBI». Esta medida asegura que quienes acceden al empleo público tengan sensibilización en diversidad LGTBI."
+  },
+  {
+    p: "El artículo 13 de la Ley 4/2023 exige adaptar la documentación administrativa. ¿A qué debe ser adecuada?",
+    ops: [
+      "Al uso de lenguaje inclusivo y no sexista en todos los formularios",
+      "A la diversidad en materia de orientación sexual, identidad sexual, expresión de género y características sexuales y a la diversidad familiar",
+      "A los estándares internacionales de derechos humanos LGTBI",
+      "A las recomendaciones del Consejo de Europa en materia de no discriminación"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 13 Ley 4/2023 establece que las Administraciones «adoptarán las medidas necesarias para procurar que la documentación administrativa y los formularios sean adecuados a la diversidad en materia de orientación sexual, identidad sexual, expresión de género y características sexuales y a la diversidad familiar». Esto implica, por ejemplo, no limitar a las categorías binarias de género en formularios."
+  },
+
+  /* ══ LO 1/2004 — TÍTULO PRELIMINAR ══ */
+  {
+    p: "¿Cuál es el objeto de la Ley Orgánica 1/2004 según su artículo 1.1?",
+    ops: [
+      "Actuar contra toda forma de violencia doméstica en el ámbito familiar",
+      "Actuar contra la violencia que se ejerce sobre las mujeres por parte de quienes sean o hayan sido sus cónyuges o estén o hayan estado ligados a ellas por relaciones similares de afectividad, aun sin convivencia",
+      "Proteger a todas las víctimas de violencia de género, independientemente del sexo del agresor",
+      "Regular el sistema de órdenes de alejamiento y protección para víctimas de violencia doméstica"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1.1 LO 1/2004 define su objeto como actuar contra la violencia que «como manifestación de la discriminación, la situación de desigualdad y las relaciones de poder de los hombres sobre las mujeres, se ejerce sobre éstas por parte de quienes sean o hayan sido sus cónyuges o de quienes estén o hayan estado ligados a ellas por relaciones similares de afectividad, aun sin convivencia»."
+  },
+  {
+    p: "El artículo 1.2 de la LO 1/2004 define la finalidad de las medidas de protección integral. ¿Cuál es?",
+    ops: [
+      "Prevenir, sancionar y erradicar la violencia y prestar asistencia a las mujeres, a sus hijos menores y a los menores sujetos a su tutela o guarda y custodia",
+      "Proteger exclusivamente a las mujeres víctimas directas de la violencia de género",
+      "Establecer un sistema de penas más severas para los delitos de violencia doméstica",
+      "Crear juzgados especializados en violencia de género en todas las provincias españolas"
+    ],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 1.2 LO 1/2004 establece que la finalidad de las medidas es «prevenir, sancionar y erradicar esta violencia y prestar asistencia a las mujeres, a sus hijos menores y a los menores sujetos a su tutela, o guarda y custodia, víctimas de esta violencia». La protección alcanza también a los menores a cargo de la víctima."
+  },
+  {
+    p: "¿Qué tipos de violencia comprende la violencia de género según el artículo 1.3 de la LO 1/2004?",
+    ops: [
+      "Solo la violencia física de carácter grave que cause lesiones permanentes",
+      "Todo acto de violencia física y psicológica, incluidas las agresiones a la libertad sexual, las amenazas, las coacciones o la privación arbitraria de libertad",
+      "La violencia física, psicológica y económica ejercida en el ámbito del hogar",
+      "Los actos de violencia física que causen lesiones y los de violencia psicológica debidamente acreditados"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1.3 LO 1/2004 establece que la violencia de género comprende «todo acto de violencia física y psicológica, incluidas las agresiones a la libertad sexual, las amenazas, las coacciones o la privación arbitraria de libertad». La definición es amplia: incluye formas no físicas como amenazas, coacciones y privación de libertad."
+  },
+  {
+    p: "El artículo 1.4 de la LO 1/2004 amplía el ámbito de protección. ¿A quiénes protege además de a las mujeres directamente?",
+    ops: [
+      "A los familiares adultos de la víctima cuando sean testigos de la violencia",
+      "A los familiares o allegados menores de edad sobre quienes se ejerza violencia con el objetivo de causar perjuicio o daño a las mujeres",
+      "A los animales domésticos del hogar víctima de la violencia",
+      "A los convivientes del hogar que sean testigos habituales de la violencia"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1.4 LO 1/2004 extiende la protección a «la violencia que con el objetivo de causar perjuicio o daño a las mujeres se ejerza sobre sus familiares o allegados menores de edad». La violencia ejercida sobre menores del entorno de la víctima como instrumento de control también queda dentro del ámbito de la ley."
+  },
+  {
+    p: "El artículo 2.a) de la LO 1/2004 enumera los principios rectores. ¿Qué establece el primero de ellos?",
+    ops: [
+      "Garantizar derechos económicos para las mujeres víctimas de violencia de género",
+      "Fortalecer las medidas de sensibilización ciudadana de prevención, dotando a los poderes públicos de instrumentos eficaces en el ámbito educativo, servicios sociales, sanitario, publicitario y mediático",
+      "Establecer un sistema integral de tutela institucional de las víctimas",
+      "Promover la colaboración de entidades y organizaciones de la sociedad civil"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.a) LO 1/2004 establece como primer principio rector «fortalecer las medidas de sensibilización ciudadana de prevención, dotando a los poderes públicos de instrumentos eficaces en el ámbito educativo, servicios sociales, sanitario, publicitario y mediático». La prevención y sensibilización es el eje primero de la respuesta integral."
+  },
+  {
+    p: "El artículo 2.f) de la LO 1/2004 establece un sistema integral de tutela institucional. ¿Qué organismo impulsa las políticas públicas dirigidas a las víctimas?",
+    ops: [
+      "El Instituto de la Mujer y para la Igualdad de Oportunidades",
+      "El Ministerio de Igualdad mediante la Secretaría de Estado correspondiente",
+      "La Delegación Especial del Gobierno contra la Violencia sobre la Mujer, en colaboración con el Observatorio Estatal de la Violencia sobre la Mujer",
+      "El Consejo General del Poder Judicial a través de su Observatorio de Violencia Doméstica"
+    ],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 2.f) LO 1/2004 establece que «la Administración General del Estado, a través de la Delegación Especial del Gobierno contra la Violencia sobre la Mujer, en colaboración con el Observatorio Estatal de la Violencia sobre la Mujer, impulse la creación de políticas públicas dirigidas a ofrecer tutela a las víctimas»."
+  },
+  {
+    p: "¿Cuál de los siguientes principios rectores de la LO 1/2004 (art. 2) garantiza que se tengan en cuenta las necesidades específicas de todas las mujeres víctimas?",
+    ops: [
+      "El principio de proporcionalidad en la respuesta penal",
+      "El principio de transversalidad de las medidas",
+      "El principio de subsidiariedad institucional",
+      "El principio de especialización de los servicios de asistencia"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.k) LO 1/2004 establece como principio rector «garantizar el principio de transversalidad de las medidas, de manera que en su aplicación se tengan en cuenta las necesidades y demandas específicas de todas las mujeres víctimas de violencia de género». La transversalidad asegura que ninguna mujer quede desprotegida por sus circunstancias particulares."
+  },
+
+  /* ══ PREGUNTAS DE SÍNTESIS Y DISTINCIÓN ══ */
+  {
+    p: "¿Cuál es la diferencia fundamental entre la discriminación directa (art. 6.1 LO 3/2007) y la discriminación por embarazo o maternidad (art. 8 LO 3/2007)?",
+    ops: [
+      "No hay diferencia; el art. 8 es simplemente una reiteración del art. 6.1 aplicada a un supuesto específico que el legislador quiso destacar expresamente como discriminación directa",
+      "La discriminación directa puede admitir justificación si hay requisito profesional esencial; la discriminación por embarazo es absoluta y no admite ninguna justificación",
+      "La discriminación del art. 8 es indirecta porque afecta solo a las mujeres embarazadas",
+      "El art. 6.1 es más amplio y el art. 8 solo protege durante la baja por maternidad"
+    ],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 8 LO 3/2007 especifica que el trato desfavorable por embarazo o maternidad es una forma de discriminación directa por razón de sexo. No añade un tipo nuevo, sino que subraya que este supuesto concreto —históricamente frecuente— es siempre discriminación directa, sin posibilidad de justificación, dado que el embarazo es una condición exclusivamente femenina."
+  },
+  {
+    p: "¿En qué se diferencia la Ley 9/2003 GVA de la LO 3/2007 en cuanto a su ámbito territorial?",
+    ops: [
+      "La LO 3/2007 es de aplicación en toda España; la Ley 9/2003 GVA solo en el ámbito territorial de la Comunitat Valenciana",
+      "Son de aplicación simultánea en todo el territorio nacional, con prevalencia de la norma estatal",
+      "La LO 3/2007 se aplica solo a las Administraciones Públicas; la Ley 9/2003 también a los particulares",
+      "La Ley 9/2003 GVA derogó la legislación estatal anterior en el ámbito autonómico valenciano"
+    ],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> La LO 3/2007 es de aplicación en todo el territorio español (art. 2.2 LO 3/2007), mientras que la Ley 9/2003 GVA «será de aplicación en todo el ámbito territorial de la Comunidad Valenciana» (art. 3 Ley 9/2003). Ambas normas son complementarias: la autonómica desarrolla y adapta los principios estatales al contexto valenciano."
+  },
+  {
+    p: "La LO 1/2004 protege a las víctimas de violencia de género en una relación específica. ¿Qué relación debe existir entre víctima y agresor?",
+    ops: [
+      "Cualquier relación de convivencia en el mismo domicilio, aunque sea temporal",
+      "Relación de cónyuge o similar relación de afectividad, con o sin convivencia, presente o pasada",
+      "Relación laboral de dependencia o jerárquica entre agresor y víctima",
+      "Relación familiar de primer grado de consanguinidad o afinidad"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1.1 LO 1/2004 define la relación protegida como la existente con «quienes sean o hayan sido sus cónyuges o de quienes estén o hayan estado ligados a ellas por relaciones similares de afectividad, aun sin convivencia». La clave es la afectividad de pareja (actual o pasada), sin que sea necesaria la convivencia."
+  },
+  {
+    p: "En materia de prueba en procesos por discriminación sexual, ¿qué excepción establece el artículo 13.2 de la LO 3/2007?",
+    ops: [
+      "La inversión de la carga de la prueba no se aplica cuando la discriminación sea indirecta",
+      "La inversión de la carga de la prueba no se aplica a los procesos penales",
+      "La inversión no se aplica cuando la parte demandada es una Administración Pública",
+      "La inversión no se aplica en los procedimientos contencioso-administrativos"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 13.2 LO 3/2007 establece expresamente que «lo establecido en el apartado anterior no será de aplicación a los procesos penales». La inversión de la carga de la prueba opera en los procesos civiles, sociales y contencioso-administrativos, pero no en el proceso penal, donde rige la presunción de inocencia."
+  },
+  {
+    p: "¿Cuál de las siguientes afirmaciones sobre el artículo 5 de la LO 3/2007 (igualdad en el acceso al empleo) es CORRECTA?",
+    ops: [
+      "Prohíbe en todo caso que el sexo sea un factor a considerar en el acceso al empleo",
+      "Permite diferencias de trato por sexo cuando constituya un requisito profesional esencial y determinante, el objetivo sea legítimo y el requisito sea proporcionado",
+      "Solo regula el empleo público, quedando el empleo privado excluido de su ámbito",
+      "Exige paridad de mujeres y hombres en todos los procesos de selección de personal"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 5 LO 3/2007 establece que «no constituirá discriminación en el acceso al empleo una diferencia de trato basada en una característica relacionada con el sexo cuando, debido a la naturaleza de las actividades profesionales concretas o al contexto en el que se lleven a cabo, dicha característica constituya un requisito profesional esencial y determinante, siempre y cuando el objetivo sea legítimo y el requisito proporcionado». Por ejemplo, contratar actores de un sexo determinado para ciertos papeles."
+  },
+  {
+    p: "¿Qué ámbitos de formación señala el artículo 12.1 de la Ley 4/2023 como merecedores de especial atención en la formación LGTBI del personal al servicio de las Administraciones?",
+    ops: [
+      "Solo los ámbitos de la seguridad, la justicia y las fuerzas armadas",
+      "La salud, la educación, la juventud, las personas mayores, las familias, los servicios sociales, el empleo, la justicia, las fuerzas y cuerpos de seguridad, las fuerzas armadas, la diplomacia, el ocio, la cultura, el deporte y la comunicación",
+      "Exclusivamente los servicios sociales y la atención a colectivos vulnerables",
+      "Los ámbitos educativo y sanitario como prioritarios, sin especificación de otros"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12.1 Ley 4/2023 señala que la formación sobre diversidad LGTBI debe impartirse «dedicando especial atención al personal que presta sus servicios en los ámbitos de la salud, la educación, la juventud, las personas mayores, las familias, los servicios sociales, el empleo, la justicia, las fuerzas y cuerpos de seguridad, las fuerzas armadas, la diplomacia, el ocio, la cultura, el deporte y la comunicación»."
+  },
+  {
+    p: "¿Cuál de las siguientes normas tiene rango de Ley Orgánica?",
+    ops: [
+      "La Ley 9/2003, de 2 de abril, de la Generalitat, para la igualdad entre mujeres y hombres",
+      "La Ley 4/2023, de 28 de febrero, para la igualdad real y efectiva de las personas trans",
+      "La Ley Orgánica 3/2007, de 22 de marzo, para la igualdad efectiva de mujeres y hombres, y la LO 1/2004 de Violencia de Género",
+      "Todas las leyes del tema tienen rango de Ley Orgánica al regular derechos fundamentales"
+    ],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> Solo la LO 3/2007 y la LO 1/2004 tienen rango de Ley Orgánica (aprobadas por mayoría absoluta del Congreso, ex art. 81 CE). La Ley 9/2003 es una ley autonómica valenciana y la Ley 4/2023 es una ley orgánica estatal ordinaria para los derechos trans y LGTBI, pero no autonómica. Para el examen, el nombre oficial indica el rango: «Ley Orgánica» en su denominación."
+  },
+  {
+    p: "El artículo 2.c) de la LO 1/2004 establece como principio rector «consagrar derechos de las mujeres víctimas de violencia de género, exigibles ante las Administraciones Públicas». ¿Qué atributos deben tener los servicios de asistencia?",
+    ops: [
+      "Gratuitos, especializados y de prestación inmediata en menos de 24 horas",
+      "Acceso rápido, transparente y eficaz a los servicios establecidos al efecto",
+      "Confidenciales, multidisciplinares y de carácter obligatorio para la víctima",
+      "Personalizados, voluntarios y financiados por el Estado con carácter preferente"
+    ],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.c) LO 1/2004 establece como fin «consagrar derechos de las mujeres víctimas de violencia de género, exigibles ante las Administraciones Públicas, y así asegurar un acceso rápido, transparente y eficaz a los servicios establecidos al efecto». Los tres adjetivos —rápido, transparente y eficaz— definen el estándar de calidad exigido."
+  }
+];
+
+/* ── LÓGICA ── */
+let orden = [], respondidas = 0, aciertos = 0, errores = 0;
+const TOTAL = BANCO.length;
+
+document.getElementById('totalLabel').textContent = '📋 ' + TOTAL + ' preguntas';
+document.getElementById('barraNum').textContent = '0 / ' + TOTAL;
+
+function mezclar(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function actualizarBarra() {
+  document.getElementById('barraFill').style.width = ((respondidas / TOTAL) * 100) + '%';
+  document.getElementById('barraNum').textContent = respondidas + ' / ' + TOTAL;
+  document.getElementById('scoreOk').textContent = '✓ ' + aciertos;
+  document.getElementById('scoreKo').textContent = '✗ ' + errores;
+}
+
+function construirPreguntas() {
+  orden = mezclar([...Array(TOTAL).keys()]);
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+  const letras = ['A', 'B', 'C', 'D'];
+
+  orden.forEach((idx, pos) => {
+    const q = BANCO[idx];
+    const opsOrden = mezclar([0, 1, 2, 3]);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = 'card-' + pos;
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'card-num';
+    numDiv.textContent = 'Pregunta ' + (pos + 1);
+
+    const pregDiv = document.createElement('div');
+    pregDiv.className = 'card-pregunta';
+    pregDiv.textContent = q.p;
+
+    const opcionesDiv = document.createElement('div');
+    opcionesDiv.className = 'opciones';
+
+    opsOrden.forEach((opIdx, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opcion';
+      btn.dataset.correcto = (opIdx === q.c) ? '1' : '0';
+      btn.dataset.pos = pos;
+      btn.innerHTML = '<span class="letra">' + letras[i] + '</span><span>' + q.ops[opIdx] + '</span>';
+      btn.addEventListener('click', onOpcionClick);
+      opcionesDiv.appendChild(btn);
+    });
+
+    const expDiv = document.createElement('div');
+    expDiv.className = 'explicacion';
+    expDiv.id = 'exp-' + pos;
+    expDiv.innerHTML = q.exp;
+
+    card.appendChild(numDiv);
+    card.appendChild(pregDiv);
+    card.appendChild(opcionesDiv);
+    card.appendChild(expDiv);
+    main.appendChild(card);
+  });
+
+  const res = document.createElement('div');
+  res.className = 'resultado';
+  res.id = 'resultado';
+  res.innerHTML = `
+    <div class="resultado-eyebrow">Resultado final</div>
+    <h2>Test completado</h2>
+    <div class="resultado-nota"><span id="rNota">-</span><span style="font-size:1.5rem;color:var(--texto-suave)">/10</span></div>
+    <div id="rBadge" class="calif-badge"></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="rOk" style="color:var(--verde)">-</div><div class="stat-lab">Correctas</div></div>
+      <div class="stat"><div class="stat-num" id="rKo" style="color:var(--rojo)">-</div><div class="stat-lab">Erróneas</div></div>
+      <div class="stat"><div class="stat-num" id="rPct">-</div><div class="stat-lab">% Acierto</div></div>
+    </div>
+    <p class="resultado-hint">Revisa las explicaciones en cada pregunta para reforzar los conceptos.</p>
+    <button class="btn btn-naranja" onclick="reiniciar()">🔄 Nuevo intento</button>
+  `;
+  main.appendChild(res);
+}
+
+function onOpcionClick(e) {
+  const btn = e.currentTarget;
+  const pos = parseInt(btn.dataset.pos);
+  const card = document.getElementById('card-' + pos);
+  card.querySelectorAll('.opcion').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correcto === '1') b.classList.add('correcta');
+    else if (b === btn) b.classList.add('incorrecta');
+  });
+  document.getElementById('exp-' + pos).classList.add('visible');
+  if (btn.dataset.correcto === '1') aciertos++; else errores++;
+  respondidas++;
+  actualizarBarra();
+  if (respondidas === TOTAL) mostrarResultado();
+}
+
+function mostrarResultado() {
+  const nota = ((aciertos / TOTAL) * 10).toFixed(1);
+  const pct = Math.round((aciertos / TOTAL) * 100);
+  let badge = '', color = '';
+  if (pct >= 90)      { badge = '🏆 Sobresaliente'; color = '#166534'; }
+  else if (pct >= 70) { badge = '✅ Notable';        color = '#1d4ed8'; }
+  else if (pct >= 50) { badge = '⚠️ Aprobado';      color = '#92400e'; }
+  else                { badge = '❌ Suspenso';       color = '#991b1b'; }
+  document.getElementById('rNota').textContent = nota;
+  document.getElementById('rOk').textContent = aciertos;
+  document.getElementById('rKo').textContent = errores;
+  document.getElementById('rPct').textContent = pct + '%';
+  const badgeEl = document.getElementById('rBadge');
+  badgeEl.textContent = badge;
+  badgeEl.style.cssText += `;background:${color}22;color:${color};border:1px solid ${color}44`;
+  const res = document.getElementById('resultado');
+  res.classList.add('visible');
+  setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function reiniciar() {
+  respondidas = 0; aciertos = 0; errores = 0;
+  actualizarBarra();
+  construirPreguntas();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+construirPreguntas();
+</script>
+</body>
+</html>
